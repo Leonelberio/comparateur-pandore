@@ -56,6 +56,69 @@ type PostProps = {
   _embedded: EmbeddedMediaProps;
 };
 
+type AssuranceProps = {
+  id: number;
+  date: string;
+  date_gmt: string;
+  guid: {
+    rendered: string;
+  };
+  modified: string;
+  modified_gmt: string;
+  slug: string;
+  status: string;
+  type: string;
+  link: string;
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+    protected: boolean;
+  };
+  featured_media: number;
+  template: string;
+  meta: {
+    _acf_changed: boolean;
+    _eb_attr: string;
+    [key: string]: any; // This allows for any additional metadata fields
+  };
+  pays: number[];
+  type_dassurance: number[];
+  class_list: string[];
+  acf: any[]; // Adjust based on the structure of ACF fields if needed
+  _links: {
+    self: {
+      href: string;
+    }[];
+    collection: {
+      href: string;
+    }[];
+    about: {
+      href: string;
+    }[];
+    "wp:featuredmedia": {
+      embeddable: boolean;
+      href: string;
+    }[];
+    "wp:attachment": {
+      href: string;
+    }[];
+    "wp:term": {
+      taxonomy: string;
+      embeddable: boolean;
+      href: string;
+    }[];
+    curies: {
+      name: string;
+      href: string;
+      templated: boolean;
+    }[];
+  };
+};
+
+
+
 type TagProps = {
   id: number;
   count: number;

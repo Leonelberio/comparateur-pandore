@@ -1,14 +1,14 @@
 const fjord: FjordProps = {
-  site_name: "Fjord", // site name: used in the header and footer
-  site_domain: "https://fjord.dev", // site domain: used in the sitemap
+  site_name: "Comparateur", // site name: used in the header and footer
+  site_domain: "https://assurances.comparateur.africa", // site domain: used in the sitemap
   site_title:
     "Fjord | Opinionated Next JS and Wordpress Starter by Alpine Codex",
   site_description:
     "Fjord is an opinionated Next JS and Wordpress starter. It's built to be a solid foundation for your next project.",
   keywords: ["Next.js", "React", "JavaScript"],
-  authors: [{ name: "9d8", url: "https://9d8.dev" }],
+  authors: [{ name: "9d8", url: "https://assurances.comparateur.africa" }],
   posts_per_page: 9,
-  wordpress_url: "https://windpress.wpenginepowered.com",
+  wordpress_url: "https://assurances.comparateur.africa",
   google_analytics_id: "G-7VM8KZENP7",
 
   logo: "../logo.svg",
@@ -35,7 +35,7 @@ const fjord: FjordProps = {
       terms_of_service: "/terms-of-service", // default is `/terms-of-service`
       terms_of_service_text: "Terms of Service", // default is `Terms of Service`
     },
-    cta: "https://github.com/9d8dev/fjord", // Link to CTA
+    cta: "#", // Link to CTA
   },
 
   nav_menu: {
