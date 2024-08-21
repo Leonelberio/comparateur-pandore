@@ -58,7 +58,7 @@ export async function fetchAssurances(perPage: number, offset: number) {
 // Fetch Assurances All
 export async function fetchAssurancesAll() {
   const res = await fetch(
-    `${fjord.wordpress_url}/wp-json/wp/v2/assurance`,
+    `${fjord.wordpress_url}/wp-json/wp/v2/assurance?_embed`,
     {
       next: { revalidate: 3600 },
     }

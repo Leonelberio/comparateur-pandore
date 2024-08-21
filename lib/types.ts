@@ -57,6 +57,8 @@ type PostProps = {
 };
 
 type AssuranceProps = {
+  excerpt: any;
+  _embedded: any;
   id: number;
   date: string;
   date_gmt: string;
@@ -152,6 +154,11 @@ type PaginationProps = {
 
 type PostCardProps = {
   post: PostProps;
+  tags?: any;
+};
+
+type AssuranceListProps = {
+  post: AssuranceProps;
   tags?: any;
 };
 

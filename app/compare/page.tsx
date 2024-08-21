@@ -37,27 +37,15 @@ export default async function Assuances({
   const lastPage = Math.ceil(totalAssurances / fjord.posts_per_page);
 
   return (
+    
     <Craft.Main>
-      <SecondaryHero title="Comparateur">
-       
-      </SecondaryHero>
       <Craft.Section>
         <Craft.Container>
-          <ContentGrid id="posts">
-            {data.map((post: AssuranceProps) => (
-              <PostCard
-                key={post.id}
-                post={post}
-              />
-            ))}
-          </ContentGrid>
-
+          
            <AssuranceComparator/>
-          <Separator className="my-6 md:my-12" />
-          <PaginationWrapper page={page} lastPage={lastPage} />
+          
         </Craft.Container>
       </Craft.Section>
-      {/* <CTA /> */}
     </Craft.Main>
   );
 }

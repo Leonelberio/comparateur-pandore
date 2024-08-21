@@ -35,7 +35,7 @@ const fjord: FjordProps = {
       terms_of_service: "/terms-of-service", // default is `/terms-of-service`
       terms_of_service_text: "Terms of Service", // default is `Terms of Service`
     },
-    cta: "#", // Link to CTA
+    cta: "/compare", // Link to CTA
   },
 
   nav_menu: {

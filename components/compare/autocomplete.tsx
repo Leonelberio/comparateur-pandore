@@ -20,9 +20,15 @@ import {
 import Image from "next/image"
 
 type AssuranceOption = {
+  _embedded: {
+    'wp:featuredmedia'?: [
+      {
+        source_url: string;
+      }
+    ];
+  };
   id: number;
   title: string;
-  image: string;
 };
 
 interface ComboboxProps {
@@ -34,8 +40,7 @@ interface ComboboxProps {
 export function AssuranceCombobox({ options, onSelect, placeholder }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [selected, setSelected] = React.useState<AssuranceOption | null>(null)
-   
-
+  
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -66,7 +71,17 @@ export function AssuranceCombobox({ options, onSelect, placeholder }: ComboboxPr
                   }}
                   className="flex items-center"
                 >
-                  <Image src={option.image} alt={option.title} className="w-6 h-6 mr-2 rounded" />
+                  {
+                    option._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
+                      <Image 
+                        src={option._embedded['wp:featuredmedia'][0].source_url} 
+                        alt={option.title} 
+                        width={24} 
+                        height={24} 
+                        className="w-6 h-6 mr-2 rounded" 
+                      />
+                    )
+                  }
                   {option.title}
                   <CheckIcon
                     className={cn(

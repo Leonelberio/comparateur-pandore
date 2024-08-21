@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Manrope, Instrument_Serif } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import * as Craft from "@/components/craft/layout";
 import Nav from "@/components/craft/section/nav";
 import Footer from "@/components/craft/section/footer";
 import "./globals.css";
 import fjord from "@/fjord.config";
 
-const manrope = Manrope({
+const manrope = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
