@@ -90,7 +90,7 @@ export default function RootLayout({
 }) {
   return (
     <Craft.Layout className={`${manrope.variable}`}>
-      <Nav />
+      {/* <Nav /> */}
       {children}
       {/* <Footer /> */}
     </Craft.Layout>
