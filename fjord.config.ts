@@ -2,9 +2,9 @@ const fjord: FjordProps = {
   site_name: "Comparateur", // site name: used in the header and footer
   site_domain: "https://assurances.comparateur.africa", // site domain: used in the sitemap
   site_title:
-    "Fjord | Opinionated Next JS and Wordpress Starter by Alpine Codex",
+    "Comparateur d'assurances",
   site_description:
-    "Fjord is an opinionated Next JS and Wordpress starter. It's built to be a solid foundation for your next project.",
+    "Comparateur d'assurances",
   keywords: ["Next.js", "React", "JavaScript"],
   authors: [{ name: "9d8", url: "https://assurances.comparateur.africa" }],
   posts_per_page: 9,

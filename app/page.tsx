@@ -1,60 +1,51 @@
+// Fjord Config
+import fjord from "@/fjord.config";
+
+// Component Imports
 import * as Craft from "@/components/craft/layout";
-import Balancer from "react-wrap-balancer";
-import Hero from "@/components/sections/hero";
+import PostCard from "@/components/content/post-card";
+import SecondaryHero from "@/components/sections/secondary-hero";
+import ContentGrid from "@/components/content/content-grid";
 import CTA from "@/components/sections/cta";
+import PaginationWrapper from "@/components/content/pagination-wrapper";
+import { Separator } from "@/components/ui/separator";
 
-export default function Home() {
+// Next Imports
+import type { Metadata } from "next";
+
+// Data Imports
+import { fetchTags, fetchPosts, fetchAssurances } from "@/lib/data";
+import { AssuranceComparator } from "@/components/compare/assurance-comparator";
+
+// Meta Data
+export const metadata: Metadata = {
+  title: `Blog | ${fjord.site_name}`,
+  description: `Read the ${fjord.site_name} blog. ${fjord.site_description}`,
+};
+
+export default async function Assuances({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const page =
+    typeof searchParams.page === "string" && +searchParams.page > 1
+      ? +searchParams.page
+      : 1;
+  const offset = (page - 1) * fjord.posts_per_page;
+  const { data, totalAssurances } = await fetchAssurances(fjord.posts_per_page, offset);
+  const lastPage = Math.ceil(totalAssurances / fjord.posts_per_page);
+
   return (
+    
     <Craft.Main>
-      <Hero />
-
       <Craft.Section>
         <Craft.Container>
-          <h2 className="!mt-0">
-            <Balancer>
-              Craft was created by{" "}
-              <a className="not-prose" href="https://bridger.to">
-                Bridger
-              </a>{" "}
-              and{" "}
-              <a className="not-prose" href="https://cameronyoungblood.com">
-                {" "}
-                Cameron
-              </a>{" "}
-              at <a href="https://9d8.dev">9d8</a> and{" "}
-              <a href="https://alpine.dev">Alpine Codex</a>.
-            </Balancer>
-          </h2>
-          <p>
-            Fjord is built around the idea of a headless WordPress backend with
-            a NextJS frontend. It makes use of the WordPress REST API to fetch
-            data and NextJS to render the frontend.
-          </p>
-          <h3>Key Features</h3>
-          <ul>
-            <li>
-              Automatic Typographic styling use a modified version of{" "}
-              <a href="https://tailwindcss.com/docs/typography-plugin">
-                Tailwind Typography
-              </a>
-            </li>
-            <li>
-              Components and design system by{" "}
-              <a href="https://craftui.org">Craft UI</a> and{" "}
-              <a href="https://ui.shadcn.com">shadcn/ui</a>
-            </li>
-            <li>Cached articles and revalidation via Next JS</li>
-          </ul>
-          <blockquote>
-            <p>
-              Fjord has been a game changer for our team. We&apos;ve been able
-              to build sites faster than ever before.
-            </p>
-          </blockquote>
+          
+           <AssuranceComparator/>
+          
         </Craft.Container>
       </Craft.Section>
-
-      <CTA />
     </Craft.Main>
   );
 }
