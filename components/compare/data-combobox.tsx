@@ -19,28 +19,27 @@ import {
 } from "@/components/ui/popover"
 import Image from "next/image"
 
-type AssuranceOption = {
-  _embedded: {
-    'wp:featuredmedia'?: [
-      {
-        source_url: string;
-      }
-    ];
-  };
+interface DataOption {
   id: number;
   title: string;
-};
-
-interface ComboboxProps {
-  options: AssuranceOption[];
-  onSelect: (option: AssuranceOption | null) => void;
-  placeholder: string;
+  image?: string;
+  [key: string]: any; // Additional dynamic properties
 }
 
-export function AssuranceCombobox({ options, onSelect, placeholder }: ComboboxProps) {
+
+
+interface ComboboxProps {
+  options: DataOption[];
+  onSelect: (option: DataOption | null) => void;
+  placeholder: string;
+  emptyMessage?: string;
+}
+
+export function DataCombobox({ options, onSelect, placeholder, emptyMessage = "No options found." }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [selected, setSelected] = React.useState<AssuranceOption | null>(null)
-  
+  const [selected, setSelected] = React.useState<DataOption | null>(null)
+
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -58,43 +57,46 @@ export function AssuranceCombobox({ options, onSelect, placeholder }: ComboboxPr
         <Command>
           <CommandInput placeholder={`Search ${placeholder}...`} className="h-9" />
           <CommandList>
-            <CommandEmpty>No assurance found.</CommandEmpty>
+            <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.id}
-                  value={option.title}
-                  onSelect={() => {
-                    setSelected(option === selected ? null : option)
-                    onSelect(option === selected ? null : option)
-                    setOpen(false)
-                  }}
-                  className="flex items-center"
-                >
-                  {
-                    option._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
+              {options.length > 0 ? (
+                options?.map((option) => (
+                  <CommandItem
+                    key={option.id}
+                    value={option.title}
+                    onSelect={() => {
+                      setSelected(option === selected ? null : option)
+                      onSelect(option === selected ? null : option)
+                      setOpen(false)
+                    }}
+                    className="flex items-center"
+                  >
+                    {option.image && (
                       <Image 
-                        src={option._embedded['wp:featuredmedia'][0].source_url} 
+                        src={option.image} 
                         alt={option.title} 
                         width={24} 
                         height={24} 
                         className="w-6 h-6 mr-2 rounded" 
                       />
-                    )
-                  }
-                  {option.title}
-                  <CheckIcon
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      selected?.id === option.id ? "opacity-100" : "opacity-0"
                     )}
-                  />
-                </CommandItem>
-              ))}
+                    {option.title}
+                    <CheckIcon
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        selected?.id === option.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))
+              ) : (
+                <div>No data found</div>
+              )}
             </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
   )
+  
 }

@@ -1,4 +1,16 @@
+"use server"
+
 import fjord from "@/fjord.config";
+import { fetchData } from "./utils";
+
+
+export async function fetchAssurances() {
+  return await fetchData({
+    endpoint: "assurance",
+    sortByDate: true,
+    embedImages: true,
+  });
+}
 
 
 
@@ -28,56 +40,56 @@ export async function fetchPosts(perPage: number, offset: number) {
 
 
 
-// Fetch Assurances
-export async function fetchAssurances(perPage: number, offset: number) {
-  const res = await fetch(
-    `${fjord.wordpress_url}/wp-json/wp/v2/assurance?_embed&per_page=${perPage}&offset=${offset}&orderby=date`,
-    {
-      next: { revalidate: 3600 },
-    }
-  );
+// // Fetch Assurances
+// export async function fetchAssurances(perPage: number, offset: number) {
+//   const res = await fetch(
+//     `${fjord.wordpress_url}/wp-json/wp/v2/assurance?_embed&per_page=${perPage}&offset=${offset}&orderby=date`,
+//     {
+//       next: { revalidate: 3600 },
+//     }
+//   );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
+//   if (!res.ok) {
+//     throw new Error("Failed to fetch data");
+//   }
 
-  const data: AssuranceProps[] = await res.json();
-  const totalAssurances = Number(res.headers.get("X-WP-Total"));
+//   const data: AssuranceProps[] = await res.json();
+//   const totalAssurances = Number(res.headers.get("X-WP-Total"));
 
-  // Sort posts by date
-  data.sort(
-    (a: AssuranceProps, b: AssuranceProps) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-  return { data, totalAssurances };
-}
-
-
+//   // Sort posts by date
+//   data.sort(
+//     (a: AssuranceProps, b: AssuranceProps) =>
+//       new Date(b.date).getTime() - new Date(a.date).getTime()
+//   );
+//   return { data, totalAssurances };
+// }
 
 
-// Fetch Assurances All
-export async function fetchAssurancesAll() {
-  const res = await fetch(
-    `${fjord.wordpress_url}/wp-json/wp/v2/assurance?_embed`,
-    {
-      next: { revalidate: 3600 },
-    }
-  );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
 
-  const data: AssuranceProps[] = await res.json();
-  const totalAssurances = Number(res.headers.get("X-WP-Total"));
+// // Fetch Assurances All
+// export async function fetchAssurancesAll() {
+//   const res = await fetch(
+//     `${fjord.wordpress_url}/wp-json/wp/v2/assurance?_embed`,
+//     {
+//       next: { revalidate: 3600 },
+//     }
+//   );
 
-  // Sort posts by date
-  data.sort(
-    (a: AssuranceProps, b: AssuranceProps) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-  return { data, totalAssurances };
-}
+//   if (!res.ok) {
+//     throw new Error("Failed to fetch data");
+//   }
+
+//   const data: AssuranceProps[] = await res.json();
+//   const totalAssurances = Number(res.headers.get("X-WP-Total"));
+
+//   // Sort posts by date
+//   data.sort(
+//     (a: AssuranceProps, b: AssuranceProps) =>
+//       new Date(b.date).getTime() - new Date(a.date).getTime()
+//   );
+//   return { data, totalAssurances };
+// }
 
 
 

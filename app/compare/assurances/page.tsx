@@ -15,7 +15,6 @@ import type { Metadata } from "next";
 
 // Data Imports
 import { fetchTags, fetchPosts, fetchAssurances } from "@/lib/data";
-import { AssuranceComparator } from "@/components/compare/assurance-comparator";
 
 // Meta Data
 export const metadata: Metadata = {
@@ -28,21 +27,16 @@ export default async function Assuances({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const page =
-    typeof searchParams.page === "string" && +searchParams.page > 1
-      ? +searchParams.page
-      : 1;
-  const offset = (page - 1) * fjord.posts_per_page;
-  const { data, totalAssurances } = await fetchAssurances(fjord.posts_per_page, offset);
-  const lastPage = Math.ceil(totalAssurances / fjord.posts_per_page);
+
 
   return (
     
     <Craft.Main>
       <Craft.Section>
         <Craft.Container>
+          Hello
           
-           <AssuranceComparator/>
+           {/* <AssuranceComparator/> */}
           
         </Craft.Container>
       </Craft.Section>
