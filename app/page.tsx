@@ -35,8 +35,7 @@ export default async function Assuances({
                 <DataComparator
                   fetchData={ fetchAssurances}
                   title="Comparateur Assurance"
-                  placeholder1="Assurance A"
-                  placeholder2="Assurance B"
+                  placeholder="Rechercher une assurance"
                   />          
                   </div>
        

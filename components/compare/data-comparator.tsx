@@ -157,7 +157,7 @@ export function DataComparator({
               }))
             ]}
             onCriteriaChange={handleCriteriaChange}
-            placeholder="Select Criteria"
+            placeholder="Critères"
           />
         </div>
 

@@ -80,7 +80,7 @@ export function CriteriaCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[var(--radix-popover-trigger-width)] p-0">
         <Command>
-          <CommandInput placeholder={`Search ${placeholder}...`} className="h-9" />
+          <CommandInput placeholder={`Rechercher ${placeholder}...`} className="h-9" />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
@@ -109,7 +109,7 @@ export function CriteriaCombobox({
                       onSelect={() => toggleCriteria(criterion)}
                       className={cn(
                         "flex items-center cursor-pointer",
-                        isSelected && "bg-blue-100" // Highlighting selected items
+                        isSelected && "bg-blue-100 text-neutral-900" // Highlighting selected items
                       )}
                     >
                       {criterion.label}
