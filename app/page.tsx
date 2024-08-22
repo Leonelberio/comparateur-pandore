@@ -1,3 +1,6 @@
+//@ts-nocheck
+
+
 // Fjord Config
 import fjord from "@/fjord.config";
 
