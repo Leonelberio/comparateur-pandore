@@ -30,7 +30,7 @@ export default async function Assuances({
 
   return (
     
-   <div className="container">
+   <div className="md:container">
           
                 <DataComparator
                   fetchData={ fetchAssurances}

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import { cn, parseText } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,51 +17,49 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import Image from "next/image";
 
-interface DataOption {
-  id: number;
-  title: string;
-  image?: string;
-  [key: string]: any;
+interface CriteriaOption {
+  id: string;
+  label: string;
 }
 
-interface ComboboxProps {
-  options: DataOption[];
-  onSelect: (options: DataOption[]) => void;
+interface CriteriaComboboxProps {
+  criteria: CriteriaOption[];
+  onCriteriaChange: (selectedCriteria: string[]) => void;
   placeholder: string;
   emptyMessage?: string;
 }
 
-export function DataCombobox({
-  options,
-  onSelect,
+export function CriteriaCombobox({
+  criteria,
+  onCriteriaChange,
   placeholder,
-  emptyMessage = "No options found.",
-}: ComboboxProps) {
+  emptyMessage = "No criteria found.",
+}: CriteriaComboboxProps) {
   const [open, setOpen] = React.useState(false);
-  const [selectedOptions, setSelectedOptions] = React.useState<DataOption[]>([]);
+  const [selectedCriteria, setSelectedCriteria] = React.useState<string[]>([]);
 
-  const toggleOption = (option: DataOption) => {
-    let updatedSelectedOptions;
-    if (selectedOptions.find((item) => item.id === option.id)) {
-      updatedSelectedOptions = selectedOptions.filter((item) => item.id !== option.id);
+  const toggleCriteria = (criteria: CriteriaOption) => {
+    let updatedSelectedCriteria;
+    if (selectedCriteria.includes(criteria.id)) {
+      updatedSelectedCriteria = selectedCriteria.filter((id) => id !== criteria.id);
     } else {
-      updatedSelectedOptions = [...selectedOptions, option];
+      updatedSelectedCriteria = [...selectedCriteria, criteria.id];
     }
-    setSelectedOptions(updatedSelectedOptions);
-    onSelect(updatedSelectedOptions); // Notify parent component of the selected options
+    setSelectedCriteria(updatedSelectedCriteria);
+    onCriteriaChange(updatedSelectedCriteria);
   };
 
   const toggleSelectAll = () => {
-    if (selectedOptions.length === options.length) {
-      // Deselect all if all are selected
-      setSelectedOptions([]);
-      onSelect([]);
+    if (selectedCriteria.length === criteria.length) {
+      // If all criteria are selected, deselect all
+      setSelectedCriteria([]);
+      onCriteriaChange([]);
     } else {
-      // Select all options
-      setSelectedOptions(options);
-      onSelect(options);
+      // Otherwise, select all criteria
+      const allCriteriaIds = criteria.map(criterion => criterion.id);
+      setSelectedCriteria(allCriteriaIds);
+      onCriteriaChange(allCriteriaIds);
     }
   };
 
@@ -74,8 +72,8 @@ export function DataCombobox({
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {selectedOptions.length > 0
-            ? `${selectedOptions.length} sélectionnés`
+          {selectedCriteria.length > 0
+            ? `${selectedCriteria.length} selected`
             : placeholder}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -95,35 +93,26 @@ export function DataCombobox({
                 <CheckIcon
                   className={cn(
                     "ml-auto h-4 w-4",
-                    selectedOptions.length === options.length
+                    selectedCriteria.length === criteria.length
                       ? "opacity-100"
                       : "opacity-0"
                   )}
                 />
               </CommandItem>
-              {options.length > 0 ? (
-                options.map((option) => {
-                  const isSelected = selectedOptions.find((item) => item.id === option.id);
+              {criteria.length > 0 ? (
+                criteria.map((criterion) => {
+                  const isSelected = selectedCriteria.includes(criterion.id);
                   return (
                     <CommandItem
-                      key={option.id}
-                      value={option.title}
-                      onSelect={() => toggleOption(option)}
+                      key={criterion.id}
+                      value={criterion.label}
+                      onSelect={() => toggleCriteria(criterion)}
                       className={cn(
                         "flex items-center cursor-pointer",
                         isSelected && "bg-blue-100" // Highlighting selected items
                       )}
                     >
-                      {option.image && (
-                        <Image
-                          src={option.image}
-                          alt={option.title}
-                          width={24}
-                          height={24}
-                          className="w-6 h-6 mr-2 rounded"
-                        />
-                      )}
-                      {parseText(option.title)}
+                      {criterion.label}
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",

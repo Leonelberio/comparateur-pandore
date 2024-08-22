@@ -8,7 +8,7 @@ import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, Tabl
 import Image from "next/image";
 import { formatMachineNames, parseText } from "@/lib/utils";
 import { DataCombobox } from "./data-combobox";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { CriteriaCombobox } from "./criteria-combobox"; // Import your new CriteriaCombobox
 
 interface ComparatorOption {
   id: number;
@@ -31,22 +31,20 @@ export function DataComparator({
 }: DataComparatorProps) {
   const [comparatorOptions, setComparatorOptions] = useState<ComparatorOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<ComparatorOption[]>([]);
-  const [selectedCriteria, setSelectedCriteria] = useState<Set<string>>(new Set(["title", "description"]));
+  const [selectedCriteria, setSelectedCriteria] = useState<string[]>(["title", "description"]);
   const [showComparison, setShowComparison] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       const { data } = await fetchData();
-      setComparatorOptions(data?.map((item) => ({
+      setComparatorOptions(data.map((item) => ({
         id: item.id,
         title: item?.title || 'No title available',
         image: item.image || '',
         content: item?.content || '',
-        acf: item?.acf || {},  
+        acf: item?.acf || {},
       })));
     };
-  
     loadData();
   }, [fetchData]);
 
@@ -58,16 +56,8 @@ export function DataComparator({
     }
   };
 
-  const handleCriteriaChange = (criterion: string) => {
-    setSelectedCriteria(prev => {
-      const newCriteria = new Set(prev);
-      if (newCriteria.has(criterion)) {
-        newCriteria.delete(criterion);
-      } else {
-        newCriteria.add(criterion);
-      }
-      return newCriteria;
-    });
+  const handleCriteriaChange = (newCriteria: string[]) => {
+    setSelectedCriteria(newCriteria);
   };
 
   const renderACFValue = (value: any) => {
@@ -108,7 +98,7 @@ export function DataComparator({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {selectedCriteria.has("description") && (
+            {selectedCriteria.includes("description") && (
               <TableRow>
                 <TableCell>Description</TableCell>
                 {selectedOptions.map(option => (
@@ -119,7 +109,7 @@ export function DataComparator({
               </TableRow>
             )}
             {Array.from(acfKeys).map((key) => (
-              selectedCriteria.has(key) && (
+              selectedCriteria.includes(key) && (
                 <TableRow key={key}>
                   <TableCell>{formatMachineNames(key)}</TableCell>
                   {selectedOptions.map(option => (
@@ -143,44 +133,40 @@ export function DataComparator({
     <div className="p-6">
       <h2 className="text-xl font-semibold mb-4">{title}</h2>
       <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 items-start md:items-center mb-4">
-        <div className="flex-1 w-full">
+        {/* DataCombobox - make it longer */}
+        <div className="flex-1 w-full md:w-3/5">
           <DataCombobox
             options={comparatorOptions}
             onSelect={setSelectedOptions}
             placeholder={placeholder}
           />
         </div>
-        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full md:w-auto">Critères</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuCheckboxItem
-              checked={selectedCriteria.has("description")}
-              onCheckedChange={() => handleCriteriaChange("description")}
-              onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-            >
-              Description
-            </DropdownMenuCheckboxItem>
-            {Array.from(
-              new Set(
-                comparatorOptions.flatMap(option => Object.keys(option.acf || {}))
-              )
-            ).map((key) => (
-              <DropdownMenuCheckboxItem
-                key={key}
-                checked={selectedCriteria.has(key)}
-                onCheckedChange={() => handleCriteriaChange(key)}
-                onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-              >
-                {formatMachineNames(key)}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button onClick={handleCompare} className="w-full md:w-auto">
-          Comparer
-        </Button>
+        
+        {/* CriteriaCombobox - same width as the Compare button */}
+        <div className="w-full md:w-1/5">
+          <CriteriaCombobox
+            criteria={[
+              { id: 'description', label: 'Description' },
+              ...Array.from(
+                new Set(
+                  comparatorOptions.flatMap(option => Object.keys(option.acf || {}))
+                )
+              ).map(key => ({
+                id: key,
+                label: formatMachineNames(key)
+              }))
+            ]}
+            onCriteriaChange={handleCriteriaChange}
+            placeholder="Select Criteria"
+          />
+        </div>
+
+        {/* Compare button - same width as CriteriaCombobox */}
+        <div className="w-full md:w-1/5">
+          <Button onClick={handleCompare} className="w-full">
+            Comparer
+          </Button>
+        </div>
       </div>
       {showComparison && renderComparisonTable()}
     </div>
