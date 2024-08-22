@@ -8,43 +8,32 @@ import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, Tabl
 import Image from "next/image";
 import { formatMachineNames, parseText } from "@/lib/utils";
 import { DataCombobox } from "./data-combobox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface ComparatorOption {
   id: number;
   title: string;
   image: string;
   content: string;
-  acf?: Record<string, any>; // Added to handle ACF fields
-  _embedded?: {
-    "wp:featuredmedia"?: {
-      media_details?: {
-        sizes?: {
-          full?: {
-            source_url: string;
-          };
-        };
-      }[];
-    }[];
-  };
+  acf?: Record<string, any>;
 }
 
 interface DataComparatorProps {
   fetchData: () => Promise<{ data: ComparatorOption[]; totalItems: number }>;
   title: string;
-  placeholder1: string;
-  placeholder2: string;
+  placeholder: string;
 }
 
 export function DataComparator({
   fetchData,
   title,
-  placeholder1,
-  placeholder2,
+  placeholder,
 }: DataComparatorProps) {
   const [comparatorOptions, setComparatorOptions] = useState<ComparatorOption[]>([]);
-  const [option1, setOption1] = useState<ComparatorOption | null>(null);
-  const [option2, setOption2] = useState<ComparatorOption | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<ComparatorOption[]>([]);
+  const [selectedCriteria, setSelectedCriteria] = useState<Set<string>>(new Set(["title", "description"]));
   const [showComparison, setShowComparison] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -54,7 +43,7 @@ export function DataComparator({
         title: item?.title || 'No title available',
         image: item.image || '',
         content: item?.content || '',
-        acf: item?.acf || {},  // Store ACF fields
+        acf: item?.acf || {},  
       })));
     };
   
@@ -62,11 +51,23 @@ export function DataComparator({
   }, [fetchData]);
 
   const handleCompare = () => {
-    if (option1 && option2) {
+    if (selectedOptions.length > 0) {
       setShowComparison(true);
     } else {
-      alert("Please select both options to compare.");
+      alert("Please select at least one option to compare.");
     }
+  };
+
+  const handleCriteriaChange = (criterion: string) => {
+    setSelectedCriteria(prev => {
+      const newCriteria = new Set(prev);
+      if (newCriteria.has(criterion)) {
+        newCriteria.delete(criterion);
+      } else {
+        newCriteria.add(criterion);
+      }
+      return newCriteria;
+    });
   };
 
   const renderACFValue = (value: any) => {
@@ -77,96 +78,110 @@ export function DataComparator({
   };
 
   const renderComparisonTable = () => {
-    // Combine the keys from both option1 and option2 ACF fields
-    const acfKeys = new Set([
-      ...Object.keys(option1?.acf || {}),
-      ...Object.keys(option2?.acf || {}),
-    ]);
+    const acfKeys = new Set(
+      selectedOptions.flatMap(option => Object.keys(option.acf || {}))
+    );
 
     return (
-      <Table>
-        <TableCaption>A comparison between the selected options.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[200px]"> Feature</TableHead>
-            <TableHead className="w-[400px]">Option 1</TableHead>
-            <TableHead className="w-[400px]">Option 2</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow>
-            <TableCell>Image</TableCell>
-            <TableCell>
-              {option1 && <Image src={option1.image} alt={option1.title} width={80} height={80} />}
-            </TableCell>
-            <TableCell>
-              {option2 && <Image src={option2.image} alt={option2.title} width={80} height={80} />}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Title</TableCell>
-            <TableCell>{option1?.title}</TableCell>
-            <TableCell>{option2?.title}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Description</TableCell>
-            <TableCell className="align-top">{parseText(option1?.content || '')}</TableCell>
-            <TableCell className="align-top">{parseText(option2?.content || '')}</TableCell>
-          </TableRow>
-
-          {/* Dynamically render ACF fields */}
-          {Array.from(acfKeys).map((key) => (
-            <TableRow key={key}>
-              <TableCell>{formatMachineNames(key)}</TableCell>
-              <TableCell>{renderACFValue(option1?.acf[key])}</TableCell>
-              <TableCell>{renderACFValue(option2?.acf[key])}</TableCell>
+      <div className="overflow-x-auto">
+        <Table className="min-w-full">
+          <TableCaption>A comparison between the selected options.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[150px] md:w-[200px] text-center"></TableHead>
+              {selectedOptions.map(option => (
+                <TableHead key={option.id} className="w-[300px] md:w-[400px] text-center">
+                  <div className="flex flex-col items-center space-y-2">
+                    {option.image && (
+                      <Image
+                        src={option.image}
+                        alt={option.title}
+                        width={80}
+                        height={80}
+                        className="mx-auto"
+                      />
+                    )}
+                    <span>{parseText(option.title)}</span>
+                  </div>
+                </TableHead>
+              ))}
             </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={3}>Comparison completed.</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {selectedCriteria.has("description") && (
+              <TableRow>
+                <TableCell>Description</TableCell>
+                {selectedOptions.map(option => (
+                  <TableCell key={option.id} className="align-top">
+                    {parseText(option.content || '')}
+                  </TableCell>
+                ))}
+              </TableRow>
+            )}
+            {Array.from(acfKeys).map((key) => (
+              selectedCriteria.has(key) && (
+                <TableRow key={key}>
+                  <TableCell>{formatMachineNames(key)}</TableCell>
+                  {selectedOptions.map(option => (
+                    <TableCell key={option.id}>{renderACFValue(option.acf?.[key])}</TableCell>
+                  ))}
+                </TableRow>
+              )
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={selectedOptions.length + 1} className="text-center">Comparison completed.</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </div>
     );
   };
 
   return (
     <div className="p-6">
-      <h2>
-        Comparer
-        {option1?.title && option2?.title
-          ? ` ${option1.title} vs ${option2.title}`
-          : option1?.title
-          ? ` ${option1.title}`
-          : option2?.title
-          ? ` ${option2.title}`
-          : ''}
-      </h2>
-      <div className="flex justify-between space-x-4">
-        <div className="w-full md:w-1/2">
+      <h2 className="text-xl font-semibold mb-4">{title}</h2>
+      <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 items-start md:items-center mb-4">
+        <div className="flex-1 w-full">
           <DataCombobox
             options={comparatorOptions}
-            onSelect={setOption1}
-            placeholder="Select Option 1"
+            onSelect={setSelectedOptions}
+            placeholder={placeholder}
           />
         </div>
-        <div className="w-full md:w-1/2">
-          <DataCombobox
-            options={comparatorOptions}
-            onSelect={setOption2}
-            placeholder="Select Option 2"
-          />
-        </div>
+        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full md:w-auto">Critères</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuCheckboxItem
+              checked={selectedCriteria.has("description")}
+              onCheckedChange={() => handleCriteriaChange("description")}
+              onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
+            >
+              Description
+            </DropdownMenuCheckboxItem>
+            {Array.from(
+              new Set(
+                comparatorOptions.flatMap(option => Object.keys(option.acf || {}))
+              )
+            ).map((key) => (
+              <DropdownMenuCheckboxItem
+                key={key}
+                checked={selectedCriteria.has(key)}
+                onCheckedChange={() => handleCriteriaChange(key)}
+                onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
+              >
+                {formatMachineNames(key)}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button onClick={handleCompare} className="w-full md:w-auto">
+          Comparer
+        </Button>
       </div>
-      <Button
-        className="mt-6"
-        onClick={handleCompare}
-      >
-        Comparer
-      </Button>
-
       {showComparison && renderComparisonTable()}
     </div>
   );

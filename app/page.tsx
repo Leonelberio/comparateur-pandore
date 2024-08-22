@@ -30,18 +30,15 @@ export default async function Assuances({
 
   return (
     
-    <Craft.Main>
-      <Craft.Section>
-        <Craft.Container>
+   <div className="container">
           
                 <DataComparator
                   fetchData={ fetchAssurances}
-                  title="Assurances"
+                  title="Comparateur Assurance"
                   placeholder1="Assurance A"
                   placeholder2="Assurance B"
-            />          
-        </Craft.Container>
-      </Craft.Section>
-    </Craft.Main>
+                  />          
+                  </div>
+       
   );
 }
